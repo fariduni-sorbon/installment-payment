@@ -9,7 +9,7 @@ namespace InstallmentPayment
         public double TotalPayment(string productName, double productAmount,
          string phoneNumber, int installmentRange)
         {
-            int  maxRange;
+            int maxRange;
             double percent;
             switch (productName)
             {
@@ -32,11 +32,36 @@ namespace InstallmentPayment
                     Console.WriteLine("Продукт не найден");
                     return 0;
             }
+            double totalAmount = 0;
+            if (installmentRange > maxRange)
+            {
+                // Если диапазон будет задаватся среди чисел 3,6,9,12,18,24 
+                // то можно использовать ниже приведенный код:
 
-            var start = Array.IndexOf(ranges, maxRange);
-            var end = Array.IndexOf(ranges, installmentRange);
-            var percentage = (end - start) * percent;
-            double totalAmount = productAmount + (productAmount * percentage);
+                // var start = Array.IndexOf(ranges, maxRange);
+                // var end = Array.IndexOf(ranges, installmentRange);
+                // var percentage = (end - start) * percent;
+                // totalAmount = productAmount + (productAmount * percentage);
+
+                // ------------------------------------------------------------
+
+                // Если диапозон может содержать такие числа как 10,15 или 21 то для правильной работы 
+                // нужно использовать ниже приведенный код:
+
+                var start = Array.IndexOf(ranges, maxRange);
+                var end = Array.FindIndex(ranges, p => p >= installmentRange);
+                if (installmentRange <= ranges[end])
+                {
+                    var percentage = (end - start) * percent;
+                    totalAmount = productAmount + (productAmount * percentage);
+                }
+            }
+            if (installmentRange <= maxRange)
+
+            {
+                totalAmount = productAmount;
+            }
+
 
             string msg = $"вы купили {productName} на сумму {productAmount}см в рассрочку на {installmentRange} месяцев.\nОбщая сумма платежа: {totalAmount}см";
 
